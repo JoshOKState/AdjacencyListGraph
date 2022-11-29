@@ -30,6 +30,11 @@ public class Main {
         public String toString() { return studentsFirstName + " " + studentsLastName + ": " + id; }
     }
 
+    private static class Friendship {
+        boolean areFriends;
+        public Friendship() { areFriends = true; }
+    }
+
     /** Prints menu of available options for user */
     public static void printMenu() {
         System.out.println("\n1. Remove friendship\n2. Delete Account\n" +
@@ -50,7 +55,7 @@ public class Main {
         }
     }
 
-    static void getDataFromFile(String filename, AdjacencyListGraph<Student, Edge> graph) {
+    static void getDataFromFile(String filename, AdjacencyListGraph<Student, Friendship> graph) {
         String filepath = "./" + filename;
         File file = new File(filepath);
 
@@ -76,8 +81,9 @@ public class Main {
                 Student s = new Student(id, firstName, lastName, college, department, email, friendCount);
                 Iterable<Vertex<Student>> vertices = graph.vertices();
                 for(Vertex v : vertices) {
-                    System.out.println(v + ", " + s.toString() + ": " + v.equals(s));
-                    if(v.getElement().equals(s)) break;
+                    Student current = (Student) v.getElement();
+                    System.out.println(current.toString() + ", " + s.toString() + ": " + current.isEqual(s));
+                    if(current.isEqual(s)) break;
                 }
             }
             System.out.println("Input file is read successfully..");
@@ -93,7 +99,7 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner scnr = new Scanner(System.in);
-        AdjacencyListGraph<Student, Edge> graph = new AdjacencyListGraph(false);
+        AdjacencyListGraph<Student, Friendship> graph = new AdjacencyListGraph(false);
         System.out.print("Please enter the file's name: ");
         getDataFromFile(scnr.nextLine(), graph);
         int selection = getUserSelection(scnr);
