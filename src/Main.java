@@ -17,9 +17,29 @@ public class Main {
             this.friendCount = friendCount;
         }
 
+        public Student(String id) {
+            this.id = id;
+            studentsFirstName = null;
+            studentsLastName = null;
+            college = null;
+            department = null;
+            email = null;
+            friendCount = 0;
+        }
+
+        public Student(String id, String firstName) {
+            this.id = id;
+            studentsFirstName = firstName;
+            studentsLastName = null;
+            college = null;
+            department = null;
+            email = null;
+            friendCount = 0;
+        }
+
         public boolean isEqual(Student otherStudent) {
-            System.out.println("this.FirstName = " + this.studentsFirstName + ", otherStudent.firstName = " + otherStudent.getStudentsFirstName() + ": " + this.studentsFirstName.equals(otherStudent.getStudentsFirstName()));
-            System.out.println("this.id = " + this.id + ", otherStudent.id = " + otherStudent.getId() + ": " + this.id.equals(otherStudent.getId()));
+//            System.out.println("this.FirstName = " + this.studentsFirstName + ", otherStudent.firstName = " + otherStudent.getStudentsFirstName() + ": " + this.studentsFirstName.equals(otherStudent.getStudentsFirstName()));
+//            System.out.println("this.id = " + this.id + ", otherStudent.id = " + otherStudent.getId() + ": " + this.id.equals(otherStudent.getId()));
             return(this.studentsFirstName.equals(otherStudent.getStudentsFirstName()) || this.id.equals(otherStudent.getId()));
         }
 
@@ -39,7 +59,7 @@ public class Main {
     public static void printMenu() {
         System.out.println("\n1. Remove friendship\n2. Delete Account\n" +
                 "3. Count friends\n4. Friends Circle\n5. Closeness centrality" +
-                "\n6. Exit");
+                "\n6. Exit\n");
     }
 
     /** Gets user input and returns as int if possible (-1 otherwise) */
@@ -62,6 +82,7 @@ public class Main {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
             reader.readLine();  // Skip first line of input file (headers)
+            // Insert all vertices
             while(reader.ready()) {
                 String[] nextInput = reader.readLine().split("\t");
                 String id = nextInput[0], firstName = nextInput[1], lastName = nextInput[2],
@@ -71,8 +92,10 @@ public class Main {
                 graph.insertVertex(s);
                 //System.out.println(newVertex.toString());
             }
+            // Go back to beginning of file to read existing friendships
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
             reader.readLine();  // Skip first line of input file (headers)
+            // Insert edges
             while(reader.ready()) {
                 String[] nextInput = reader.readLine().split("\t");
                 String id = nextInput[0], firstName = nextInput[1], lastName = nextInput[2],
@@ -80,10 +103,25 @@ public class Main {
                 int friendCount = Integer.parseInt(nextInput[6]);
                 Student s = new Student(id, firstName, lastName, college, department, email, friendCount);
                 Iterable<Vertex<Student>> vertices = graph.vertices();
+                Vertex currentVertex = null, newFriend = null;
                 for(Vertex v : vertices) {
                     Student current = (Student) v.getElement();
-                    System.out.println(current.toString() + ", " + s.toString() + ": " + current.isEqual(s));
-                    if(current.isEqual(s)) break;
+                    //System.out.println(current.toString() + ", " + s.toString() + ": " + current.isEqual(s));
+                    if(current.isEqual(s)) {
+                        currentVertex = v;
+                        break;
+                    }
+                }
+                for(int i = 7; i < nextInput.length; ++i) {
+                    Student friend = new Student(nextInput[i]);
+                    for(Vertex v : vertices) {
+                        Student current = (Student)v.getElement();
+                        if(current.isEqual(friend)) {
+                            newFriend = v;
+                            break;
+                        }
+                    }
+                    graph.insertEdge(currentVertex, newFriend, new Friendship());
                 }
             }
             System.out.println("Input file is read successfully..");

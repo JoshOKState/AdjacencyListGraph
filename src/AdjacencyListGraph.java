@@ -77,6 +77,12 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
 
     public Edge<E> getEdge(Vertex<V> u, Vertex<V> v) throws IllegalArgumentException {
         InnerVertex<V> origin = validate(u);
+        // return origin.getOutgoing().get(v);
+        Iterable existingFriendships = origin.getOutgoing().positions();
+        for(Object friendship : existingFriendships) {
+
+        }
+
         return null;
     }
 
