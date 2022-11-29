@@ -59,7 +59,7 @@ public class Main {
     public static void printMenu() {
         System.out.println("\n1. Remove friendship\n2. Delete Account\n" +
                 "3. Count friends\n4. Friends Circle\n5. Closeness centrality" +
-                "\n6. Exit\n");
+                "\n6. Exit\n\nPlease make a selection (enter 1-6): ");
     }
 
     /** Gets user input and returns as int if possible (-1 otherwise) */
@@ -121,7 +121,9 @@ public class Main {
                             break;
                         }
                     }
-                    graph.insertEdge(currentVertex, newFriend, new Friendship());
+                    try {
+                        graph.insertEdge(currentVertex, newFriend, new Friendship());
+                    } catch(IllegalArgumentException e) {}
                 }
             }
             System.out.println("Input file is read successfully..");
@@ -142,12 +144,35 @@ public class Main {
         getDataFromFile(scnr.nextLine(), graph);
         int selection = getUserSelection(scnr);
         while(selection != 6) {     // Continue until user enter 6 to exit
+            Iterable<Vertex<Student>> vertices = graph.vertices();
             switch(selection) {
                 case 1:
                     // Remove friendship
+                    System.out.print("Please enter the first name of the first student: ");
+                    Student s1 = new Student(null, scnr.nextLine());
+                    System.out.print("Please enter the first name of the second student: ");
+                    Student s2 = new Student(null, scnr.nextLine());
+
+
                     break;
                 case 2:
                     // Delete Account
+                    System.out.print("Please enter the first name of the student to remove: ");
+                    Student s = new Student(null, scnr.nextLine());
+                    boolean found = false;
+                    for(Vertex v : vertices) {
+                        Student current = (Student) v.getElement();
+                        //System.out.println(current.toString() + ", " + s.toString() + ": " + current.isEqual(s));
+                        if(current.isEqual(s)) {
+                            found = true;
+                            graph.removeVertex(v);
+                            System.out.println("The student " + s.getStudentsFirstName() + " has been successfully removed.");
+                            System.out.println("Total number of vertices in the graph: " + graph.numVertices());
+                            System.out.println("Total number of edges in the graph: " + graph.numEdges());
+                            break;
+                        }
+                    }
+                    if(!found) System.out.println("Sorry..\n" + s.getStudentsFirstName() + " not found!");
                     break;
                 case 3:
                     // Count friends
@@ -159,7 +184,7 @@ public class Main {
                     break;
                 default:
                     // Selection was outside proper range
-                    System.out.println("\nYou didn't have a valid input. Please enter 1-7.\n");
+                    System.out.println("\nYou didn't have a valid input. Please enter 1-6.\n");
             }
             // Get another selection from user
             selection = getUserSelection(scnr);
