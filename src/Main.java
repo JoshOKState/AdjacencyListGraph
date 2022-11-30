@@ -51,8 +51,10 @@ public class Main {
     }
 
     private static class Friendship {
-        boolean areFriends;
-        public Friendship() { areFriends = true; }
+        int weight;
+        public Friendship() { weight = 1; } // graph is unweighted i.e. all edges are equal weight
+
+        public int getWeight() { return weight; }
     }
 
     /** Prints menu of available options for user */
