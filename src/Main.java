@@ -1,8 +1,5 @@
 import java.io.*;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     private static class Student {
@@ -49,6 +46,7 @@ public class Main {
         public String getStudentsFirstName() { return studentsFirstName; }
 
         public String toString() { return studentsFirstName + " " + studentsLastName + ": " + id; }
+        public String getCollege() { return college; }
     }
 
     private static class Friendship {
@@ -62,7 +60,8 @@ public class Main {
     public static void printMenu() {
         System.out.println("\n1. Remove friendship\n2. Delete Account\n" +
                 "3. Count friends\n4. Friends Circle\n5. Closeness centrality" +
-                "\n6. Exit\n\nPlease make a selection (enter 1-6): ");
+                "\n6. Exit\n\n");
+        System.out.print("Please make a selection (enter 1-6): ");
     }
 
     /** Gets user input and returns as int if possible (-1 otherwise) */
@@ -140,6 +139,28 @@ public class Main {
         }
     }
 
+    public static <V,E> void collegeBFS(AdjacencyListGraph<V,E> g, Vertex<V> s, Set<Vertex<V>> known, Map<Vertex<V>, Edge<E>> forest) {
+        PositionalList<Vertex<V>> level = new LinkedPositionalList<>();
+        known.add(s);
+        level.addLast(s);
+        String college = ((Student) s.getElement()).getCollege();
+        while(!level.isEmpty()) {
+            PositionalList<Vertex<V>> nextLevel = new LinkedPositionalList<>();
+            for(Vertex<V> u: level) {
+                for(Position<Edge<E>> e : g.outgoingEdges(u)) {
+                    Vertex<V> v = g.opposite(u, e.getElement());
+                    String vCollege = ((Student)v.getElement()).getCollege();
+                    if(!known.contains(v)) {
+                        known.add(v);
+                        if(college == vCollege) forest.put(v, e.getElement());
+                        nextLevel.addLast(v);
+                    }
+                }
+                level = nextLevel;
+            }
+        }
+    }
+
     public static void main(String[] args) {
         Scanner scnr = new Scanner(System.in);
         AdjacencyListGraph<Student, Friendship> graph = new AdjacencyListGraph(false);
@@ -200,9 +221,11 @@ public class Main {
                     if(!found) System.out.println("Sorry..\n" + lonely.getStudentsFirstName() + " not found!");
                     break;
                 case 4:
-                    // Closeness centrality
+                    // Friend circle via BFS
+                    System.out.print("Which college would you like to search? ");
                     break;
                 case 5:
+                    // Closeness centrality à la Dijkstra's Algorithm
                     break;
                 default:
                     // Selection was outside proper range
