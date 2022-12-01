@@ -1,3 +1,5 @@
+import java.util.Collection;
+
 public class AdjacencyListGraph<V, E> implements Graph<V, E> {
 
 
@@ -172,5 +174,10 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
         InnerEdge<E> edge = (InnerEdge<E>) e;   // safe cast
         if (!edge.validate(this)) throw new IllegalArgumentException("Invalid edge");
         return edge;
+    }
+
+    public Iterable<Edge<E>> friendsList(Vertex<V> v) {
+        InnerVertex<V> vertex = validate(v);
+        return vertex.getOutgoing();
     }
 }

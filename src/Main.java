@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -147,6 +148,7 @@ public class Main {
         int selection = getUserSelection(scnr);
         while(selection != 6) {     // Continue until user enter 6 to exit
             Iterable<Vertex<Student>> vertices = graph.vertices();
+            boolean found = false;
             switch(selection) {
                 case 1:
                     // Remove friendship
@@ -161,10 +163,8 @@ public class Main {
                     // Delete Account
                     System.out.print("Please enter the first name of the student to remove: ");
                     Student s = new Student(null, scnr.nextLine());
-                    boolean found = false;
                     for(Vertex v : vertices) {
                         Student current = (Student) v.getElement();
-                        //System.out.println(current.toString() + ", " + s.toString() + ": " + current.isEqual(s));
                         if(current.isEqual(s)) {
                             found = true;
                             graph.removeVertex(v);
@@ -178,6 +178,26 @@ public class Main {
                     break;
                 case 3:
                     // Count friends
+                    System.out.println("Please enter the name of the student: ");
+                    Student lonely = new Student(null, scnr.nextLine());
+                    for(Vertex v : vertices) {
+                        Student current = (Student) v.getElement();
+                        if(current.isEqual(lonely)) {
+                            found = true;
+                            Iterable<Edge<Friendship>> friends = graph.friendsList(v);
+                            int count = 0;
+                            for(Edge<Friendship> friendship : friends) {
+                                count += 1;
+                            }
+                            System.out.println("Friend count for " + current.getStudentsFirstName() + ": " + count);
+                            for(Edge<Friendship> friendship : friends) {
+                                Vertex<Student> friend = graph.opposite(v, friendship);
+                                System.out.println(friend.getElement().getStudentsFirstName());
+                            }
+                            break;
+                        }
+                    }
+                    if(!found) System.out.println("Sorry..\n" + lonely.getStudentsFirstName() + " not found!");
                     break;
                 case 4:
                     // Closeness centrality
