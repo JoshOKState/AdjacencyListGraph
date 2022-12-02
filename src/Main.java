@@ -64,8 +64,7 @@ public class Main {
                 5. Closeness centrality
                 6. Exit
                 
-                Please make a selection (enter 1-6): 
-                """);
+                Please make a selection (enter 1-6): """);
     }
 
     /** Gets user input and returns as int if possible (-1 otherwise) */
@@ -96,7 +95,6 @@ public class Main {
                 int friendCount = Integer.parseInt(nextInput[6]);
                 Student s = new Student(id, firstName, lastName, college, department, email, friendCount);
                 graph.insertVertex(s);
-                //System.out.println(newVertex.toString());
             }
             // Go back to beginning of file to read existing friendships
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
@@ -112,7 +110,6 @@ public class Main {
                 Vertex currentVertex = null, newFriend = null;
                 for(Vertex v : vertices) {
                     Student current = (Student) v.getElement();
-                    //System.out.println(current.toString() + ", " + s.toString() + ": " + current.isEqual(s));
                     if(current.isEqual(s)) {
                         currentVertex = v;
                         break;
@@ -194,12 +191,9 @@ public class Main {
             Vertex<Student> u = entry.getValue();
             cloud.put(u, key);
             pqTokens.remove(u);
-            //if(g.outgoingEdges(u) == null) continue;
             for (Edge<Friendship> e : g.outgoingEdgeList(u)) {
-                //Edge<Friendship> f = e.getElement();
                 Vertex<Student> v = g.opposite(u, e);
                 if (cloud.get(v) == null) {
-                    //int wgt = e.getElement().getElement();        // unweighted graph
                     if (d.get(u) + e.getElement().getElement() < d.get(v)) {
                         d.put(v, d.get(u) + e.getElement().getElement());
                         pq.replaceKey(pqTokens.get(v), d.get(v));
