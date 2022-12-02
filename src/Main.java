@@ -36,13 +36,10 @@ public class Main {
         }
 
         public boolean isEqual(Student otherStudent) {
-//            System.out.println("this.FirstName = " + this.studentsFirstName + ", otherStudent.firstName = " + otherStudent.getStudentsFirstName() + ": " + this.studentsFirstName.equals(otherStudent.getStudentsFirstName()));
-//            System.out.println("this.id = " + this.id + ", otherStudent.id = " + otherStudent.getId() + ": " + this.id.equals(otherStudent.getId()));
             return(this.studentsFirstName.equals(otherStudent.getStudentsFirstName()) || this.id.equals(otherStudent.getId()));
         }
 
         public String getId() { return id; }
-        public int getFriendCount() { return friendCount; }
         public String getStudentsFirstName() { return studentsFirstName; }
 
         public String toString() { return studentsFirstName + " " + studentsLastName + ": " + id; }
@@ -58,10 +55,17 @@ public class Main {
 
     /** Prints menu of available options for user */
     public static void printMenu() {
-        System.out.println("\n1. Remove friendship\n2. Delete Account\n" +
-                "3. Count friends\n4. Friends Circle\n5. Closeness centrality" +
-                "\n6. Exit\n");
-        System.out.print("Please make a selection (enter 1-6): ");
+        System.out.print("""
+
+                1. Remove friendship
+                2. Delete Account
+                3. Count friends
+                4. Friends Circle
+                5. Closeness centrality
+                6. Exit
+                
+                Please make a selection (enter 1-6): 
+                """);
     }
 
     /** Gets user input and returns as int if possible (-1 otherwise) */
@@ -155,7 +159,7 @@ public class Main {
                     String vCollege = ((Student)v.getElement()).getCollege();
                     if(!known.contains(v)) {
                         known.add(v);
-                        if(college == vCollege) forest.put(v, e.getElement());
+                        if(college.equals(vCollege)) forest.put(v, e.getElement());
                         nextLevel.addLast(v);
                     }
                 }
@@ -195,9 +199,9 @@ public class Main {
                 //Edge<Friendship> f = e.getElement();
                 Vertex<Student> v = g.opposite(u, e);
                 if (cloud.get(v) == null) {
-                    int wgt = 1;        // unweighted graph
-                    if (d.get(u) + wgt < d.get(v)) {
-                        d.put(v, d.get(u) + wgt);
+                    //int wgt = e.getElement().getElement();        // unweighted graph
+                    if (d.get(u) + e.getElement().getElement() < d.get(v)) {
+                        d.put(v, d.get(u) + e.getElement().getElement());
                         pq.replaceKey(pqTokens.get(v), d.get(v));
                     }
                 }
@@ -223,48 +227,45 @@ public class Main {
         while(selection != 6) {     // Continue until user enter 6 to exit
             Iterable<Vertex<Student>> vertices = graph.vertices();
             boolean found = false;
-            switch(selection) {
-                case 1:
+            switch (selection) {
+                case 1 -> {
                     // Remove friendship
                     System.out.print("Please enter the first name of the first student: ");
                     Student s1 = new Student(null, scnr.nextLine());
                     System.out.print("Please enter the first name of the second student: ");
                     Student s2 = new Student(null, scnr.nextLine());
                     Vertex<Student> v1 = null, v2 = null;
-                    for(Vertex<Student> v : vertices) {
-                        Student curr = (Student) v.getElement();
-                        if(curr.isEqual(s1)) v1 = v;
-                        if(curr.isEqual(s2)) v2 = v;
-                        if(v1 != null && v2 != null) break;
+                    for (Vertex<Student> v : vertices) {
+                        Student curr = v.getElement();
+                        if (curr.isEqual(s1)) v1 = v;
+                        if (curr.isEqual(s2)) v2 = v;
+                        if (v1 != null && v2 != null) break;
                     }
-                    if(v1 == null || v2 == null) {
+                    if (v1 == null || v2 == null) {
                         System.out.println("Sorry..");
-                        if(v1 == null) System.out.println(s1.getStudentsFirstName() + " not found!");
-                        if(v2 == null) System.out.println(s2.getStudentsFirstName() + " not found!");
-                    }
-                    else {
+                        if (v1 == null) System.out.println(s1.getStudentsFirstName() + " not found!");
+                        if (v2 == null) System.out.println(s2.getStudentsFirstName() + " not found!");
+                    } else {
                         Edge<Friendship> toRemove = graph.getEdge(v1, v2);
                         try {
                             graph.removeEdge(toRemove);
                             System.out.println("The edge between the students " + s1.getStudentsFirstName() + " and " +
                                     s2.getStudentsFirstName() + " has been successfully removed..");
                             printInfo(graph);
-                        }
-                        catch (IllegalArgumentException e) {
+                        } catch (IllegalArgumentException e) {
                             System.out.println("Sorry.. There is no edge between the vertices " + s1.getStudentsFirstName() + " and " +
                                     s2.getStudentsFirstName() + ".");
                         }
                         //graph.nullifyEdge(toRemove);
                     }
-
-                    break;
-                case 2:
+                }
+                case 2 -> {
                     // Delete Account
                     System.out.print("Please enter the first name of the student to remove: ");
                     Student s = new Student(null, scnr.nextLine());
-                    for(Vertex v : vertices) {
+                    for (Vertex v : vertices) {
                         Student current = (Student) v.getElement();
-                        if(current.isEqual(s)) {
+                        if (current.isEqual(s)) {
                             found = true;
                             graph.removeVertex(v);
                             System.out.println("The student " + s.getStudentsFirstName() + " has been successfully removed.");
@@ -272,25 +273,25 @@ public class Main {
                             break;
                         }
                     }
-                    if(!found) System.out.println("Sorry..\n" + s.getStudentsFirstName() + " not found!");
-                    break;
-                case 3:
+                    if (!found) System.out.println("Sorry..\n" + s.getStudentsFirstName() + " not found!");
+                }
+                case 3 -> {
                     // Count friends
                     System.out.print("Please enter the name of the student: ");
                     Student lonely = new Student(null, scnr.nextLine());
-                    for(Vertex v : vertices) {
+                    for (Vertex v : vertices) {
                         Student current = (Student) v.getElement();
-                        if(current.isEqual(lonely)) {
+                        if (current.isEqual(lonely)) {
                             found = true;
                             Iterable<Edge<Friendship>> friends = graph.friendsList(v);
                             int count = 0;
-                            for(Edge<Friendship> friendship : friends) {
-                                if(friendship.getElement() != null) count += 1;
+                            for (Edge<Friendship> friendship : friends) {
+                                if (friendship.getElement() != null) count += 1;
                             }
                             System.out.println("Friend count for " + current.getStudentsFirstName() + ": " + count);
                             System.out.println("Friends of " + current.getStudentsFirstName() + " are:");
-                            for(Edge<Friendship> friendship : friends) {
-                                if(friendship.getElement() != null) {
+                            for (Edge<Friendship> friendship : friends) {
+                                if (friendship.getElement() != null) {
                                     Vertex<Student> friend = graph.opposite(v, friendship);
                                     System.out.println(friend.getElement().getStudentsFirstName());
                                 }
@@ -298,29 +299,29 @@ public class Main {
                             break;
                         }
                     }
-                    if(!found) System.out.println("Sorry..\n" + lonely.getStudentsFirstName() + " not found!");
-                    break;
-                case 4:
+                    if (!found) System.out.println("Sorry..\n" + lonely.getStudentsFirstName() + " not found!");
+                }
+                case 4 -> {
                     // Friend circle via BFS
                     System.out.print("Which college would you like to search? ");
-                    for(Vertex v : vertices) {
+                    for (Vertex v : vertices) {
                         Student current = (Student) v.getElement();
 
                     }
-                    break;
-                case 5:
+                }
+                case 5 -> {
                     // Closeness centrality à la Dijkstra's Algorithm
                     System.out.print("Please enter the student's name: ");
                     Student howClose = new Student(null, scnr.nextLine());
                     for (Vertex v : vertices) {
                         Student current = (Student) v.getElement();
-                        if(current.isEqual(howClose)) {
+                        if (current.isEqual(howClose)) {
                             found = true;
                             Map<Vertex<Student>, Integer> lengths = shortestPathLengths(graph, v);
                             Iterable<Entry<Vertex<Student>, Integer>> entries = lengths.entrySet();
                             double sum = 0;
-                            for(Entry<Vertex<Student>, Integer> entry : entries) {
-                                if(entry.getValue() > 0 && entry.getValue() < 1000)
+                            for (Entry<Vertex<Student>, Integer> entry : entries) {
+                                if (entry.getValue() > 0 && entry.getValue() < 1000)
                                     sum += 1.0 / entry.getValue();
                             }
                             System.out.println("The Closeness Centrality for " + howClose.getStudentsFirstName() + ": " + sum);
@@ -329,10 +330,10 @@ public class Main {
                         }
                     }
                     if (!found) System.out.println("Sorry..\n" + howClose.getStudentsFirstName() + " not found!");
-                    break;
-                default:
+                }
+                default ->
                     // Selection was outside proper range
-                    System.out.println("\nYou didn't have a valid input. Please enter 1-6.\n");
+                        System.out.println("\nYou didn't have a valid input. Please enter 1-6.\n");
             }
             // Get another selection from user
             selection = getUserSelection(scnr);

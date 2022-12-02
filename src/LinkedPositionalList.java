@@ -261,13 +261,6 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
         return answer;
     }
 
-    public void invalidate(Position<E> p) throws IllegalArgumentException {
-        Node<E> node = validate(p);
-        node.setElement(null);
-        node.setPrev(null);
-        node.setNext(null);
-    }
-
     // nested PositionIterator class
     private class PositionIterator implements Iterator<Position<E>> {
         /** A Position of the containing list, initialized to first Position */

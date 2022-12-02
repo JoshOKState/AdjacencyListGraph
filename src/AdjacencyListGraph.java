@@ -1,23 +1,20 @@
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 public class AdjacencyListGraph<V, E> implements Graph<V, E> {
 
 
-    private boolean isDirected;
-    private LinkedPositionalList<Vertex<V>> vertices = new LinkedPositionalList<>();
-    private LinkedPositionalList<Edge<E>> edges = new LinkedPositionalList<>();
+    private final boolean isDirected;
+    private final LinkedPositionalList<Vertex<V>> vertices = new LinkedPositionalList<>();
+    private final LinkedPositionalList<Edge<E>> edges = new LinkedPositionalList<>();
 
     public AdjacencyListGraph(boolean directed) { isDirected = directed; }
 
     /** A vertex of an adjacency list graph representation */
     private class InnerVertex<V> implements Vertex<V> {
-        private V element;
+        private final V element;
         private Position<Vertex<V>> pos;
         //private LinkedPositionalList<Edge<E>> outgoing, incoming;
-        private ArrayList<Edge<E>> outgoing, incoming;
+        private final ArrayList<Edge<E>> outgoing, incoming;
 
         /** Constructs a new InnerVertex instance storing given element */
         public InnerVertex(V elem, boolean graphIsDirected) {
@@ -48,9 +45,9 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
 
     /** An edge between two vertices */
     private class InnerEdge<E> implements Edge<E> {
-        private E element;
+        private final E element;
         private Position<Edge<E>> pos;
-        private Vertex<V>[] endpoints;
+        private final Vertex<V>[] endpoints;
 
         /** Constructs InnerEdge instance from u to v, storing given element */
         public InnerEdge(Vertex<V> u, Vertex<V> v, E elem) {
@@ -82,11 +79,7 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
     public Iterable<Edge<E>> edges() { return edges; }
 
     public Edge<E> getEdge(Vertex<V> u, Vertex<V> v) throws IllegalArgumentException {
-
-        InnerVertex<V> origin = validate(u);
-        // return origin.getOutgoing().get(v);
         Vertex[] endpoints = {u,v};
-        //Iterable<Edge<E>> existingEdges = origin.getOutgoing();
         for(Edge<E> edge : edges) {
             Vertex[] currentEndpoints = ((InnerEdge<E>) edge).endpoints;
             if(currentEndpoints[0] == endpoints[0] && currentEndpoints[1] == endpoints[1]) return edge;
@@ -118,20 +111,21 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
     }
 
     public Iterable<Position<Edge<E>>> outgoingEdges(Vertex<V> v) throws IllegalArgumentException {
-        InnerVertex<V> vert = validate(v);
-        //return vert.getOutgoing().positions();
         return null;
     }
 
     public Iterable<Position<Edge<E>>> incomingEdges(Vertex<V> v) throws IllegalArgumentException {
-        InnerVertex<V> vert = validate(v);
-        //return vert.getIncoming().positions();
         return null;
     }
 
     public ArrayList<Edge<E>> outgoingEdgeList(Vertex<V> v) throws IllegalArgumentException {
         InnerVertex<V> vert = validate(v);
         return vert.getOutgoing();
+    }
+
+    public ArrayList<Edge<E>> incomingEdgeList(Vertex<V> v) throws IllegalArgumentException {
+        InnerVertex<V> vert = validate(v);
+        return vert.getIncoming();
     }
 
     public Vertex<V> insertVertex(V element) {
@@ -157,13 +151,11 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
     public void removeVertex(Vertex<V> v) throws IllegalArgumentException {
         InnerVertex<V> vert = validate(v);
         // remove all incident edges from the graph
-        //for (Position<Edge<E>> e : vert.getOutgoing().positions()) removeEdge(e.getElement());
         for(Edge<E> edge : vert.getOutgoing()) {
             InnerEdge<E> e = validate(edge);
             edges.remove(e.getPosition());
         }
         vert.getOutgoing().clear();
-        //for (Position<Edge<E>> e : vert.getIncoming().positions()) removeEdge(e.getElement());
         for(Edge<E> edge : vert.getIncoming()) {
             InnerEdge<E> e = validate(edge);
             edges.remove(e.getPosition());
@@ -173,24 +165,6 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
         vert.setPosition(null);
     }
 
-//    public void removeEdge(Edge<E> e) throws IllegalArgumentException {
-//        InnerEdge<E> edge = validate(e);
-//        // remove this edge from vertices' adjacencies
-//        //InnerVertex<V>[] verts = ((InnerVertex<V>[])edge.getEndpoints());
-//        Vertex<V>[] verts = edge.getEndpoints();
-//        InnerVertex<V>[] innerVerts = new InnerVertex[verts.length];
-//        for(int i = 0; i < verts.length; ++i) {
-//            innerVerts[i] = (InnerVertex<V>) verts[i];
-//        }
-//
-//        // remove this edge from the list of edges
-//        edges.remove(edge.getPosition());
-//        innerVerts[0].getOutgoing().remove(edge.getPosition());
-//        innerVerts[1].getIncoming().remove(edge.getPosition());
-//        // Problem is right below... setting this position to null means edge is invalidated when attempting to remove from other endpoint's adjacency list
-//        edge.setPosition(null);
-//    }
-
     public void removeEdge(Edge<E> e) throws IllegalArgumentException {
         InnerEdge<E> edge = validate(e);
         Vertex<V>[] verts = edge.getEndpoints();
@@ -199,11 +173,6 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
         innerVerts[0].getOutgoing().remove(e);
         innerVerts[1].getIncoming().remove(e);
         edges.remove(edge.getPosition());
-        edge.setPosition(null);
-    }
-
-    public void nullifyEdge(Edge<E> e) throws IllegalArgumentException {
-        InnerEdge<E> edge = validate(e);
         edge.setPosition(null);
     }
 
