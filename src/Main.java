@@ -103,7 +103,7 @@ public class Main {
             while(reader.ready()) {
                 String[] nextInput = reader.readLine().split("\t");
                 String id = nextInput[0], firstName = nextInput[1], lastName = nextInput[2],
-                        college = nextInput[3], department = nextInput[4], email = nextInput[5];
+                        college = nextInput[3].replace("\"", ""), department = nextInput[4], email = nextInput[5];
                 int friendCount = Integer.parseInt(nextInput[6]);
                 Student s = new Student(id, firstName, lastName, college, department, email, friendCount);
                 Iterable<Vertex<Student>> vertices = graph.vertices();
@@ -148,22 +148,26 @@ public class Main {
         PositionalList<Vertex<Student>> level = new LinkedPositionalList<>();
         known.add(s);
         level.addLast(s);
-        String college = ((Student) s.getElement()).getCollege();
         while(!level.isEmpty()) {
             PositionalList<Vertex<Student>> nextLevel = new LinkedPositionalList<>();
             for(Vertex<Student> u: level) {
-                for(Position<Edge<Friendship>> e : g.outgoingEdges(u)) {
-                    Vertex<Student> v = g.opposite(u, e.getElement());
-                    String vCollege = ((Student)v.getElement()).getCollege();
+                for(Edge<Friendship> e : g.outgoingEdgeList(u)) {
+                    Vertex<Student> v = g.opposite(u, e);
+                    Student vStudent = v.getElement();
+                    String vCollege = vStudent.getCollege();
                     if(!known.contains(v)) {
                         known.add(v);
-                        if(college.equals(vCollege)) forest.put(v, e.getElement());
+                        if(collegeName.equals(vCollege)) forest.put(v, e);
                         nextLevel.addLast(v);
                     }
                 }
                 level = nextLevel;
             }
         }
+        System.out.println("Following are the friend circles in the " + collegeName +":");
+        forest.entrySet().forEach(entry -> {
+            System.out.println(entry.getKey().getElement().getStudentsFirstName());
+        });
     }
 
     // Dijkstra's algorithm
@@ -304,14 +308,14 @@ public class Main {
                     Set known = new HashSet();
                     for (Vertex v : vertices) {
                         Student current = (Student) v.getElement();
-                        if(current.getCollege().equals(collegeName) && !(known.contains(v))) {
+                        if((current.getCollege().replace("\"", "")).equals(collegeName) && !(known.contains(v))) {
                             collegeBFS(graph, v, known, forest, collegeName);
                         }
                     }
-                    System.out.println("Following are the friend circles in the " + collegeName +":");
-                    forest.entrySet().forEach(entry -> {
-                        System.out.println(forest.get(entry).toString());
-                    });
+//                    System.out.println("Following are the friend circles in the " + collegeName +":");
+//                    forest.entrySet().forEach(entry -> {
+//                        System.out.println(forest.get(entry).toString());
+//                    });
                 }
                 case 5 -> {
                     // Closeness centrality à la Dijkstra's Algorithm
