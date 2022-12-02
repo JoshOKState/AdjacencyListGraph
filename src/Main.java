@@ -165,9 +165,7 @@ public class Main {
             }
         }
         System.out.println("Following are the friend circles in the " + collegeName +":");
-        forest.entrySet().forEach(entry -> {
-            System.out.println(entry.getKey().getElement().getStudentsFirstName());
-        });
+        forest.entrySet().forEach(entry -> System.out.println(entry.getKey().getElement().getStudentsFirstName()));
     }
 
     // Dijkstra's algorithm
@@ -312,10 +310,6 @@ public class Main {
                             collegeBFS(graph, v, known, forest, collegeName);
                         }
                     }
-//                    System.out.println("Following are the friend circles in the " + collegeName +":");
-//                    forest.entrySet().forEach(entry -> {
-//                        System.out.println(forest.get(entry).toString());
-//                    });
                 }
                 case 5 -> {
                     // Closeness centrality à la Dijkstra's Algorithm
