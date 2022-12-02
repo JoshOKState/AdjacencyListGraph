@@ -46,6 +46,7 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
             return element;
         }
 
+
         /**
          * Returns the previous node in the list or null if none exists
          * @return previous node in list
@@ -254,10 +255,15 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
         successor.setPrev(predecessor);
         size--;
         E answer = node.getElement();
-        node.setElement(null);      // Help with garbage collection
+        //node.setElement(null);      // Help with garbage collection
         node.setPrev(null);
         node.setNext(null);         // Convention for defunct node
         return answer;
+    }
+
+    public void invalidate(Position<E> p) throws IllegalArgumentException {
+        Node<E> node = validate(p);
+        node.setElement(null);
     }
 
     // nested PositionIterator class

@@ -77,7 +77,7 @@ public class Main {
         }
     }
 
-    static void getDataFromFile(String filename, AdjacencyListGraph<Student, Friendship> graph) {
+    static boolean getDataFromFile(String filename, AdjacencyListGraph<Student, Friendship> graph) {
         String filepath = "./" + filename;
         File file = new File(filepath);
 
@@ -131,11 +131,14 @@ public class Main {
             System.out.println("Input file is read successfully..");
             System.out.println("Total number of vertices in the graph: " + graph.numVertices());
             System.out.println("Total number of edges in the graph: " + graph.numEdges());
+            return true;
         }
         catch(FileNotFoundException e) {
             System.out.println("File not found.");
+            return false;
         } catch (IOException e) {
             System.out.println("Error occurred while receiving the data.");
+            return false;
         }
     }
 
@@ -164,8 +167,11 @@ public class Main {
     public static void main(String[] args) {
         Scanner scnr = new Scanner(System.in);
         AdjacencyListGraph<Student, Friendship> graph = new AdjacencyListGraph(false);
-        System.out.print("Please enter the file's name: ");
-        getDataFromFile(scnr.nextLine(), graph);
+        boolean fileFound = false;
+        while(!fileFound) {
+            System.out.print("Please enter the file's name: ");
+            fileFound = getDataFromFile(scnr.nextLine(), graph);
+        }
         int selection = getUserSelection(scnr);
         while(selection != 6) {     // Continue until user enter 6 to exit
             Iterable<Vertex<Student>> vertices = graph.vertices();
@@ -199,7 +205,7 @@ public class Main {
                     break;
                 case 3:
                     // Count friends
-                    System.out.println("Please enter the name of the student: ");
+                    System.out.print("Please enter the name of the student: ");
                     Student lonely = new Student(null, scnr.nextLine());
                     for(Vertex v : vertices) {
                         Student current = (Student) v.getElement();
@@ -211,6 +217,7 @@ public class Main {
                                 count += 1;
                             }
                             System.out.println("Friend count for " + current.getStudentsFirstName() + ": " + count);
+                            System.out.println("Friends of " + current.getStudentsFirstName() + " are:");
                             for(Edge<Friendship> friendship : friends) {
                                 Vertex<Student> friend = graph.opposite(v, friendship);
                                 System.out.println(friend.getElement().getStudentsFirstName());

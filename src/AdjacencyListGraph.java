@@ -156,11 +156,17 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
     public void removeEdge(Edge<E> e) throws IllegalArgumentException {
         InnerEdge<E> edge = validate(e);
         // remove this edge from vertices' adjacencies
-        InnerVertex<V>[] verts = (InnerVertex<V>[])edge.getEndpoints();
-        verts[0].getOutgoing().remove(edge.getPosition());
-        verts[1].getIncoming().remove(edge.getPosition());
+        //InnerVertex<V>[] verts = ((InnerVertex<V>[])edge.getEndpoints());
+        Vertex<V>[] verts = edge.getEndpoints();
+        InnerVertex<V>[] innerVerts = new InnerVertex[verts.length];
+        for(int i = 0; i < verts.length; ++i) {
+            innerVerts[i] = (InnerVertex<V>) verts[i];
+        }
+        innerVerts[0].getOutgoing().remove(edge.getPosition());
+        innerVerts[1].getIncoming().remove(edge.getPosition());
         // remove this edge from the list of edges
         edges.remove(edge.getPosition());
+        //((LinkedPositionalList<E>)edges).invalidate(edge.getPosition());
         edge.setPosition(null);
     }
 
@@ -182,6 +188,4 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
         InnerVertex<V> vertex = validate(v);
         return vertex.getOutgoing();
     }
-
-
 }
