@@ -164,8 +164,12 @@ public class Main {
                 level = nextLevel;
             }
         }
-        System.out.println("Following are the friend circles in the " + collegeName +":");
-        forest.entrySet().forEach(entry -> System.out.println(entry.getKey().getElement().getStudentsFirstName()));
+        int i = 1;
+        for (Entry<Vertex<Student>, Edge<Friendship>> entry : forest.entrySet()) {
+            System.out.print(entry.getKey().getElement().getStudentsFirstName());
+            if(!(i++ == forest.size())) System.out.print(" - ");
+            else System.out.println();
+        }
     }
 
     // Dijkstra's algorithm
@@ -302,11 +306,12 @@ public class Main {
                     // Friend circle via BFS
                     System.out.print("Which college would you like to search? ");
                     String collegeName = scnr.nextLine();
-                    Map forest = new ProbeHashMap();
                     Set known = new HashSet();
+                    System.out.println("Following are the friend circles in " + collegeName);
                     for (Vertex v : vertices) {
+                        Map forest = new ProbeHashMap();
                         Student current = (Student) v.getElement();
-                        if((current.getCollege().replace("\"", "")).equals(collegeName) && !(known.contains(v))) {
+                        if(current.getCollege().equals(collegeName) && !(known.contains(v))) {
                             collegeBFS(graph, v, known, forest, collegeName);
                         }
                     }
