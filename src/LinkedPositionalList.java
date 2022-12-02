@@ -256,14 +256,16 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
         size--;
         E answer = node.getElement();
         //node.setElement(null);      // Help with garbage collection
-        node.setPrev(null);
-        node.setNext(null);         // Convention for defunct node
+        //node.setPrev(null);
+        //node.setNext(null);         // Convention for defunct node
         return answer;
     }
 
     public void invalidate(Position<E> p) throws IllegalArgumentException {
         Node<E> node = validate(p);
         node.setElement(null);
+        node.setPrev(null);
+        node.setNext(null);
     }
 
     // nested PositionIterator class

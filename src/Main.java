@@ -183,7 +183,21 @@ public class Main {
                     Student s1 = new Student(null, scnr.nextLine());
                     System.out.print("Please enter the first name of the second student: ");
                     Student s2 = new Student(null, scnr.nextLine());
-
+                    Vertex<Student> v1 = null, v2 = null;
+                    for(Vertex<Student> v : vertices) {
+                        Student curr = (Student) v.getElement();
+                        if(curr.isEqual(s1)) v1 = v;
+                        if(curr.isEqual(s2)) v2 = v;
+                        if(v1 != null && v2 != null) break;
+                    }
+                    if(v1 == null || v2 == null) {
+                        System.out.println("Sorry..");
+                        if(v1 == null) System.out.println(s1.getStudentsFirstName() + " not found!");
+                        if(v2 == null) System.out.println(s2.getStudentsFirstName() + " not found!");
+                    }
+                    else {
+                        graph.removeEdge(graph.getEdge(v1, v2));
+                    }
 
                     break;
                 case 2:
