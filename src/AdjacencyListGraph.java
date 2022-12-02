@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -15,13 +16,14 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
     private class InnerVertex<V> implements Vertex<V> {
         private V element;
         private Position<Vertex<V>> pos;
-        private LinkedPositionalList<Edge<E>> outgoing, incoming;
+        //private LinkedPositionalList<Edge<E>> outgoing, incoming;
+        private ArrayList<Edge<E>> outgoing, incoming;
 
         /** Constructs a new InnerVertex instance storing given element */
         public InnerVertex(V elem, boolean graphIsDirected) {
             element = elem;
-            outgoing = new LinkedPositionalList<>();
-            if(graphIsDirected) incoming = new LinkedPositionalList<>();
+            outgoing = new ArrayList<>();
+            if(graphIsDirected) incoming = new ArrayList<>();
             else incoming = outgoing;
         }
 
@@ -38,10 +40,10 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
         public Position<Vertex<V>> getPosition() { return pos; }
 
         /** Returns reference to the underlying list of outgoing edges */
-        public PositionalList<Edge<E>> getOutgoing() { return outgoing; }
+        public ArrayList<Edge<E>> getOutgoing() { return outgoing; }
 
         /** Returns reference to the underlying list of incoming edges */
-        public PositionalList<Edge<E>> getIncoming() { return incoming; }
+        public ArrayList<Edge<E>> getIncoming() { return incoming; }
     }
 
     /** An edge between two vertices */
@@ -117,12 +119,19 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
 
     public Iterable<Position<Edge<E>>> outgoingEdges(Vertex<V> v) throws IllegalArgumentException {
         InnerVertex<V> vert = validate(v);
-        return vert.getOutgoing().positions();
+        //return vert.getOutgoing().positions();
+        return null;
     }
 
     public Iterable<Position<Edge<E>>> incomingEdges(Vertex<V> v) throws IllegalArgumentException {
         InnerVertex<V> vert = validate(v);
-        return vert.getIncoming().positions();
+        //return vert.getIncoming().positions();
+        return null;
+    }
+
+    public ArrayList<Edge<E>> outgoingEdgeList(Vertex<V> v) throws IllegalArgumentException {
+        InnerVertex<V> vert = validate(v);
+        return vert.getOutgoing();
     }
 
     public Vertex<V> insertVertex(V element) {
@@ -137,8 +146,10 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
             e.setPosition(edges.addLast(e));
             InnerVertex<V> origin = validate(u);
             InnerVertex<V> dest = validate(v);
-            origin.getOutgoing().addLast(e);
-            dest.getIncoming().addLast(e);
+            //origin.getOutgoing().addLast(e);
+            origin.getOutgoing().add(e);
+            //dest.getIncoming().addLast(e);
+            dest.getIncoming().add(e);
             return e;
         } else throw new IllegalArgumentException("Edge from u to v already exists");
     }
@@ -146,27 +157,48 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
     public void removeVertex(Vertex<V> v) throws IllegalArgumentException {
         InnerVertex<V> vert = validate(v);
         // remove all incident edges from the graph
-        for (Position<Edge<E>> e : vert.getOutgoing().positions()) removeEdge(e.getElement());
-        for (Position<Edge<E>> e : vert.getIncoming().positions()) removeEdge(e.getElement());
+        //for (Position<Edge<E>> e : vert.getOutgoing().positions()) removeEdge(e.getElement());
+        for(Edge<E> edge : vert.getOutgoing()) {
+            InnerEdge<E> e = validate(edge);
+            edges.remove(e.getPosition());
+        }
+        vert.getOutgoing().clear();
+        //for (Position<Edge<E>> e : vert.getIncoming().positions()) removeEdge(e.getElement());
+        for(Edge<E> edge : vert.getIncoming()) {
+            InnerEdge<E> e = validate(edge);
+            edges.remove(e.getPosition());
+        }
+        vert.getIncoming().clear();
         vertices.remove(vert.getPosition());
         vert.setPosition(null);
     }
 
+//    public void removeEdge(Edge<E> e) throws IllegalArgumentException {
+//        InnerEdge<E> edge = validate(e);
+//        // remove this edge from vertices' adjacencies
+//        //InnerVertex<V>[] verts = ((InnerVertex<V>[])edge.getEndpoints());
+//        Vertex<V>[] verts = edge.getEndpoints();
+//        InnerVertex<V>[] innerVerts = new InnerVertex[verts.length];
+//        for(int i = 0; i < verts.length; ++i) {
+//            innerVerts[i] = (InnerVertex<V>) verts[i];
+//        }
+//
+//        // remove this edge from the list of edges
+//        edges.remove(edge.getPosition());
+//        innerVerts[0].getOutgoing().remove(edge.getPosition());
+//        innerVerts[1].getIncoming().remove(edge.getPosition());
+//        // Problem is right below... setting this position to null means edge is invalidated when attempting to remove from other endpoint's adjacency list
+//        edge.setPosition(null);
+//    }
+
     public void removeEdge(Edge<E> e) throws IllegalArgumentException {
         InnerEdge<E> edge = validate(e);
-        // remove this edge from vertices' adjacencies
-        //InnerVertex<V>[] verts = ((InnerVertex<V>[])edge.getEndpoints());
         Vertex<V>[] verts = edge.getEndpoints();
         InnerVertex<V>[] innerVerts = new InnerVertex[verts.length];
-        for(int i = 0; i < verts.length; ++i) {
-            innerVerts[i] = (InnerVertex<V>) verts[i];
-        }
-
-        // remove this edge from the list of edges
+        for(int i = 0; i < verts.length; ++i) innerVerts[i] = (InnerVertex<V>) verts[i];
+        innerVerts[0].getOutgoing().remove(e);
+        innerVerts[1].getIncoming().remove(e);
         edges.remove(edge.getPosition());
-        innerVerts[0].getOutgoing().remove(edge.getPosition());
-        innerVerts[1].getIncoming().remove(edge.getPosition());
-        // Problem is right below... setting this position to null means edge is invalidated when attempting to remove from other endpoint's adjacency list
         edge.setPosition(null);
     }
 

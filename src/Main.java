@@ -60,7 +60,7 @@ public class Main {
     public static void printMenu() {
         System.out.println("\n1. Remove friendship\n2. Delete Account\n" +
                 "3. Count friends\n4. Friends Circle\n5. Closeness centrality" +
-                "\n6. Exit\n\n");
+                "\n6. Exit\n");
         System.out.print("Please make a selection (enter 1-6): ");
     }
 
@@ -129,8 +129,7 @@ public class Main {
                 }
             }
             System.out.println("Input file is read successfully..");
-            System.out.println("Total number of vertices in the graph: " + graph.numVertices());
-            System.out.println("Total number of edges in the graph: " + graph.numEdges());
+            printInfo(graph);
             return true;
         }
         catch(FileNotFoundException e) {
@@ -166,7 +165,7 @@ public class Main {
     }
 
     // Dijkstra's algorithm
-    public static <Student> Map<Vertex<Student>, Integer> shortestPathLengths(Graph<Student, Friendship> g, Vertex<Student> src) {
+    public static <Student> Map<Vertex<Student>, Integer> shortestPathLengths(AdjacencyListGraph<Student, Friendship> g, Vertex<Student> src) {
         // d.get(v) is upper bound on distance from src to v
         Map<Vertex<Student>, Integer> d = new ProbeHashMap<>();
         // map reachable v to its d value
@@ -191,9 +190,10 @@ public class Main {
             Vertex<Student> u = entry.getValue();
             cloud.put(u, key);
             pqTokens.remove(u);
-            for (Position<Edge<Friendship>> e : g.outgoingEdges(u)) {
-                Edge<Friendship> f = e.getElement();
-                Vertex<Student> v = g.opposite(u, f);
+            //if(g.outgoingEdges(u) == null) continue;
+            for (Edge<Friendship> e : g.outgoingEdgeList(u)) {
+                //Edge<Friendship> f = e.getElement();
+                Vertex<Student> v = g.opposite(u, e);
                 if (cloud.get(v) == null) {
                     int wgt = 1;        // unweighted graph
                     if (d.get(u) + wgt < d.get(v)) {
@@ -204,6 +204,11 @@ public class Main {
             }
         }
         return cloud;
+    }
+
+    public static void printInfo(AdjacencyListGraph<Student,Friendship> graph) {
+        System.out.println("Total number of vertices in the graph: " + graph.numVertices());
+        System.out.println("Total number of edges in the graph: " + graph.numEdges());
     }
 
     public static void main(String[] args) {
@@ -239,7 +244,16 @@ public class Main {
                     }
                     else {
                         Edge<Friendship> toRemove = graph.getEdge(v1, v2);
-                        graph.removeEdge(toRemove);
+                        try {
+                            graph.removeEdge(toRemove);
+                            System.out.println("The edge between the students " + s1.getStudentsFirstName() + " and " +
+                                    s2.getStudentsFirstName() + " has been successfully removed..");
+                            printInfo(graph);
+                        }
+                        catch (IllegalArgumentException e) {
+                            System.out.println("Sorry.. There is no edge between the vertices " + s1.getStudentsFirstName() + " and " +
+                                    s2.getStudentsFirstName() + ".");
+                        }
                         //graph.nullifyEdge(toRemove);
                     }
 
@@ -254,8 +268,7 @@ public class Main {
                             found = true;
                             graph.removeVertex(v);
                             System.out.println("The student " + s.getStudentsFirstName() + " has been successfully removed.");
-                            System.out.println("Total number of vertices in the graph: " + graph.numVertices());
-                            System.out.println("Total number of edges in the graph: " + graph.numEdges());
+                            printInfo(graph);
                             break;
                         }
                     }
