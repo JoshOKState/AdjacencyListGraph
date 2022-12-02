@@ -211,6 +211,40 @@ public class Main {
         return cloud;
     }
 
+    public static <Student, Friendship> void DFS(Graph<Student,Friendship> g, Vertex<Student> u,
+                                                 Set<Vertex<Student>> known, Map<Vertex<Student>, Edge<Friendship>> forest) {
+        known.add(u);
+        for(Position<Edge<Friendship>> e : g.outgoingEdges(u)) {
+            Vertex<Student> v = g.opposite(u,e.getElement());
+            if(!known.contains(v)) {
+                forest.put(v,e.getElement());
+                DFS(g,v,known,forest);
+            }
+        }
+    }
+
+    public static <Student,Friendship> PositionalList<Edge<Friendship>> constructPath(Graph<Student,Friendship> g, Vertex<Student> u,
+                                                                                      Vertex<Student> v, Map<Vertex<Student>, Edge<Friendship>> forest) {
+        PositionalList<Edge<Friendship>> path = new LinkedPositionalList<>();
+        if(forest.get(v) != null) {
+            Vertex<Student> walk = v;
+            while (walk != u) {
+                Edge<Friendship> edge = forest.get(walk);
+                path.addFirst(edge);
+                walk = g.opposite(walk, edge);
+            }
+        }
+        return path;
+    }
+
+    public static <Student,Friendship> Map<Vertex<Student>, Edge<Friendship>> DFSComplete(Graph<Student,Friendship> g) {
+        Set<Vertex<Student>> known = new HashSet<>();
+        Map<Vertex<Student>, Edge<Friendship>> forest = new ProbeHashMap<>();
+        for(Vertex<Student> u : g.vertices())
+            if(!known.contains(u)) DFS(g, u, known, forest);
+        return forest;
+    }
+
     public static void printInfo(AdjacencyListGraph<Student,Friendship> graph) {
         System.out.println("Total number of vertices in the graph: " + graph.numVertices());
         System.out.println("Total number of edges in the graph: " + graph.numEdges());
