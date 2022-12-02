@@ -6,8 +6,8 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
 
 
     private boolean isDirected;
-    private PositionalList<Vertex<V>> vertices = new LinkedPositionalList<>();
-    private PositionalList<Edge<E>> edges = new LinkedPositionalList<>();
+    private LinkedPositionalList<Vertex<V>> vertices = new LinkedPositionalList<>();
+    private LinkedPositionalList<Edge<E>> edges = new LinkedPositionalList<>();
 
     public AdjacencyListGraph(boolean directed) { isDirected = directed; }
 
@@ -84,12 +84,11 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
         InnerVertex<V> origin = validate(u);
         // return origin.getOutgoing().get(v);
         Vertex[] endpoints = {u,v};
-        Vertex[] endpointsSwapped = {v,u};
-        Iterable<Edge<E>> existingEdges = origin.getOutgoing();
-        for(Edge<E> edge : existingEdges) {
+        //Iterable<Edge<E>> existingEdges = origin.getOutgoing();
+        for(Edge<E> edge : edges) {
             Vertex[] currentEndpoints = ((InnerEdge<E>) edge).endpoints;
             if(currentEndpoints[0] == endpoints[0] && currentEndpoints[1] == endpoints[1]) return edge;
-            if(currentEndpoints[0] == endpointsSwapped[0] && currentEndpoints[1] == endpointsSwapped[1]) return edge;
+            if(currentEndpoints[0] == endpoints[1] && currentEndpoints[1] == endpoints[0]) return edge;
         }
         return null;
     }
@@ -162,11 +161,17 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
         for(int i = 0; i < verts.length; ++i) {
             innerVerts[i] = (InnerVertex<V>) verts[i];
         }
-        innerVerts[0].getOutgoing().remove(edge.getPosition());
-        innerVerts[1].getIncoming().remove(edge.getPosition());
+
         // remove this edge from the list of edges
         edges.remove(edge.getPosition());
-        //((LinkedPositionalList<E>)edges).invalidate(edge.getPosition());
+        innerVerts[0].getOutgoing().remove(edge.getPosition());
+        innerVerts[1].getIncoming().remove(edge.getPosition());
+        // Problem is right below... setting this position to null means edge is invalidated when attempting to remove from other endpoint's adjacency list
+        edge.setPosition(null);
+    }
+
+    public void nullifyEdge(Edge<E> e) throws IllegalArgumentException {
+        InnerEdge<E> edge = validate(e);
         edge.setPosition(null);
     }
 

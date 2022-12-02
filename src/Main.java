@@ -142,6 +142,7 @@ public class Main {
         }
     }
 
+    // Breadth-first search of graph
     public static <V,E> void collegeBFS(AdjacencyListGraph<V,E> g, Vertex<V> s, Set<Vertex<V>> known, Map<Vertex<V>, Edge<E>> forest) {
         PositionalList<Vertex<V>> level = new LinkedPositionalList<>();
         known.add(s);
@@ -162,6 +163,47 @@ public class Main {
                 level = nextLevel;
             }
         }
+    }
+
+    // Dijkstra's algorithm
+    public static <Student> Map<Vertex<Student>, Integer> shortestPathLengths(Graph<Student, Friendship> g, Vertex<Student> src) {
+        // d.get(v) is upper bound on distance from src to v
+        Map<Vertex<Student>, Integer> d = new ProbeHashMap<>();
+        // map reachable v to its d value
+        Map<Vertex<Student>, Integer> cloud = new ProbeHashMap<>();
+        // pq will have vertices as elements, with d.get(v) as key
+        AdaptablePriorityQueue<Integer, Vertex<Student>> pq;
+        pq = new HeapAdaptablePriorityQueue<>();
+        Map<Vertex<Student>, Entry<Integer, Vertex<Student>>> pqTokens;
+        pqTokens = new ProbeHashMap<>();
+
+        for (Vertex<Student> v : g.vertices()) {
+            if(v == src)
+                d.put(v,0);
+            else
+                d.put(v, Integer.MAX_VALUE);
+            pqTokens.put(v, pq.insert(d.get(v), v));
+        }
+
+        while(!pq.isEmpty()) {
+            Entry<Integer, Vertex<Student>> entry = pq.removeMin();
+            int key = entry.getKey();
+            Vertex<Student> u = entry.getValue();
+            cloud.put(u, key);
+            pqTokens.remove(u);
+            for (Position<Edge<Friendship>> e : g.outgoingEdges(u)) {
+                Edge<Friendship> f = e.getElement();
+                Vertex<Student> v = g.opposite(u, f);
+                if (cloud.get(v) == null) {
+                    int wgt = 1;        // unweighted graph
+                    if (d.get(u) + wgt < d.get(v)) {
+                        d.put(v, d.get(u) + wgt);
+                        pq.replaceKey(pqTokens.get(v), d.get(v));
+                    }
+                }
+            }
+        }
+        return cloud;
     }
 
     public static void main(String[] args) {
@@ -196,7 +238,9 @@ public class Main {
                         if(v2 == null) System.out.println(s2.getStudentsFirstName() + " not found!");
                     }
                     else {
-                        graph.removeEdge(graph.getEdge(v1, v2));
+                        Edge<Friendship> toRemove = graph.getEdge(v1, v2);
+                        graph.removeEdge(toRemove);
+                        //graph.nullifyEdge(toRemove);
                     }
 
                     break;
@@ -228,13 +272,15 @@ public class Main {
                             Iterable<Edge<Friendship>> friends = graph.friendsList(v);
                             int count = 0;
                             for(Edge<Friendship> friendship : friends) {
-                                count += 1;
+                                if(friendship.getElement() != null) count += 1;
                             }
                             System.out.println("Friend count for " + current.getStudentsFirstName() + ": " + count);
                             System.out.println("Friends of " + current.getStudentsFirstName() + " are:");
                             for(Edge<Friendship> friendship : friends) {
-                                Vertex<Student> friend = graph.opposite(v, friendship);
-                                System.out.println(friend.getElement().getStudentsFirstName());
+                                if(friendship.getElement() != null) {
+                                    Vertex<Student> friend = graph.opposite(v, friendship);
+                                    System.out.println(friend.getElement().getStudentsFirstName());
+                                }
                             }
                             break;
                         }
@@ -244,9 +290,32 @@ public class Main {
                 case 4:
                     // Friend circle via BFS
                     System.out.print("Which college would you like to search? ");
+                    for(Vertex v : vertices) {
+                        Student current = (Student) v.getElement();
+
+                    }
                     break;
                 case 5:
                     // Closeness centrality à la Dijkstra's Algorithm
+                    System.out.print("Please enter the student's name: ");
+                    Student howClose = new Student(null, scnr.nextLine());
+                    for (Vertex v : vertices) {
+                        Student current = (Student) v.getElement();
+                        if(current.isEqual(howClose)) {
+                            found = true;
+                            Map<Vertex<Student>, Integer> lengths = shortestPathLengths(graph, v);
+                            Iterable<Entry<Vertex<Student>, Integer>> entries = lengths.entrySet();
+                            double sum = 0;
+                            for(Entry<Vertex<Student>, Integer> entry : entries) {
+                                if(entry.getValue() > 0 && entry.getValue() < 1000)
+                                    sum += 1.0 / entry.getValue();
+                            }
+                            System.out.println("The Closeness Centrality for " + howClose.getStudentsFirstName() + ": " + sum);
+                            System.out.println("The Normalized Closeness Centrality for " + howClose.getStudentsFirstName() + ": " + sum / (graph.numVertices() - 1));
+                            break;
+                        }
+                    }
+                    if (!found) System.out.println("Sorry..\n" + howClose.getStudentsFirstName() + " not found!");
                     break;
                 default:
                     // Selection was outside proper range

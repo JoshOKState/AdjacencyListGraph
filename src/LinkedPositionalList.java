@@ -255,9 +255,9 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
         successor.setPrev(predecessor);
         size--;
         E answer = node.getElement();
-        //node.setElement(null);      // Help with garbage collection
-        //node.setPrev(null);
-        //node.setNext(null);         // Convention for defunct node
+        node.setElement(null);      // Help with garbage collection
+        node.setPrev(null);
+        node.setNext(null);         // Convention for defunct node
         return answer;
     }
 
