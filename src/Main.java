@@ -64,7 +64,7 @@ public class Main {
                 5. Closeness centrality
                 6. Exit
                 
-                Please make a selection (enter 1-6): """);
+                Please make a selection (enter 1-6):\040""");
     }
 
     /** Gets user input and returns as int if possible (-1 otherwise) */
@@ -143,16 +143,17 @@ public class Main {
     }
 
     // Breadth-first search of graph
-    public static <V,E> void collegeBFS(AdjacencyListGraph<V,E> g, Vertex<V> s, Set<Vertex<V>> known, Map<Vertex<V>, Edge<E>> forest) {
-        PositionalList<Vertex<V>> level = new LinkedPositionalList<>();
+    public static <V,E> void collegeBFS(AdjacencyListGraph<Student,Friendship> g, Vertex<Student> s, Set<Vertex<Student>> known, Map<Vertex<Student>,
+            Edge<Friendship>> forest, String collegeName) {
+        PositionalList<Vertex<Student>> level = new LinkedPositionalList<>();
         known.add(s);
         level.addLast(s);
         String college = ((Student) s.getElement()).getCollege();
         while(!level.isEmpty()) {
-            PositionalList<Vertex<V>> nextLevel = new LinkedPositionalList<>();
-            for(Vertex<V> u: level) {
-                for(Position<Edge<E>> e : g.outgoingEdges(u)) {
-                    Vertex<V> v = g.opposite(u, e.getElement());
+            PositionalList<Vertex<Student>> nextLevel = new LinkedPositionalList<>();
+            for(Vertex<Student> u: level) {
+                for(Position<Edge<Friendship>> e : g.outgoingEdges(u)) {
+                    Vertex<Student> v = g.opposite(u, e.getElement());
                     String vCollege = ((Student)v.getElement()).getCollege();
                     if(!known.contains(v)) {
                         known.add(v);
@@ -298,10 +299,19 @@ public class Main {
                 case 4 -> {
                     // Friend circle via BFS
                     System.out.print("Which college would you like to search? ");
+                    String collegeName = scnr.nextLine();
+                    Map forest = new ProbeHashMap();
+                    Set known = new HashSet();
                     for (Vertex v : vertices) {
                         Student current = (Student) v.getElement();
-
+                        if(current.getCollege().equals(collegeName) && !(known.contains(v))) {
+                            collegeBFS(graph, v, known, forest, collegeName);
+                        }
                     }
+                    System.out.println("Following are the friend circles in the " + collegeName +":");
+                    forest.entrySet().forEach(entry -> {
+                        System.out.println(forest.get(entry).toString());
+                    });
                 }
                 case 5 -> {
                     // Closeness centrality à la Dijkstra's Algorithm
