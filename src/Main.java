@@ -62,9 +62,10 @@ public class Main {
                 3. Count friends
                 4. Friends Circle
                 5. Closeness centrality
-                6. Exit
+                6. Find Connectors
+                7. Exit
                 
-                Please make a selection (enter 1-6):\040""");
+                Please make a selection (enter 1-7):\040""");
     }
 
     /** Gets user input and returns as int if possible (-1 otherwise) */
@@ -212,13 +213,13 @@ public class Main {
         return cloud;
     }
 
-    public static <Student, Friendship> void DFS(Graph<Student,Friendship> g, Vertex<Student> u,
+    public static <Student, Friendship> void DFS(AdjacencyListGraph<Student,Friendship> g, Vertex<Student> u,
                                                  Set<Vertex<Student>> known, Map<Vertex<Student>, Edge<Friendship>> forest) {
         known.add(u);
-        for(Position<Edge<Friendship>> e : g.outgoingEdges(u)) {
-            Vertex<Student> v = g.opposite(u,e.getElement());
+        for(Edge<Friendship> e : g.outgoingEdgeList(u)) {
+            Vertex<Student> v = g.opposite(u,e);
             if(!known.contains(v)) {
-                forest.put(v,e.getElement());
+                forest.put(v,e);
                 DFS(g,v,known,forest);
             }
         }
@@ -238,7 +239,7 @@ public class Main {
         return path;
     }
 
-    public static <Student,Friendship> Map<Vertex<Student>, Edge<Friendship>> DFSComplete(Graph<Student,Friendship> g) {
+    public static <Student,Friendship> Map<Vertex<Student>, Edge<Friendship>> DFSComplete(AdjacencyListGraph<Student,Friendship> g) {
         Set<Vertex<Student>> known = new HashSet<>();
         Map<Vertex<Student>, Edge<Friendship>> forest = new ProbeHashMap<>();
         for(Vertex<Student> u : g.vertices())
@@ -260,7 +261,7 @@ public class Main {
             fileFound = getDataFromFile(scnr.nextLine(), graph);
         }
         int selection = getUserSelection(scnr);
-        while(selection != 6) {     // Continue until user enters 6 to exit
+        while(selection != 7) {     // Continue until user enters 7 to exit
             Iterable<Vertex<Student>> vertices = graph.vertices();
             boolean found = false;
             switch (selection) {
@@ -371,6 +372,14 @@ public class Main {
                         }
                     }
                     if (!found) System.out.println("Sorry..\n" + howClose.getStudentsFirstName() + " not found!");
+                }
+                case 6 -> {
+                    Map<Vertex<Student>, Edge<Friendship>> spanningForest = DFSComplete(graph);
+                    if(spanningForest.size() == 0)
+                        System.out.println("There are no connectors in the graph.");
+                    System.out.println(spanningForest.size());
+                    for(Entry<Vertex<Student>, Edge<Friendship>> kv : spanningForest.entrySet())
+                        System.out.println(kv.getKey().getElement().getStudentsFirstName() + " " + kv.getValue().getElement().toString());
                 }
                 default ->
                     // Selection was outside proper range

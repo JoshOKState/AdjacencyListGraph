@@ -12,6 +12,8 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
     /** A vertex of an adjacency list graph representation */
     private class InnerVertex<V> implements Vertex<V> {
         private final V element;
+
+        private int dfsNum = Integer.MAX_VALUE, low = Integer.MAX_VALUE;
         private Position<Vertex<V>> pos;
         //private LinkedPositionalList<Edge<E>> outgoing, incoming;
         private final ArrayList<Edge<E>> outgoing, incoming;
@@ -30,6 +32,21 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
         /** returns the element associated with the vertex */
         public V getElement() { return element; }
 
+        /**
+         * returns the DFS number associated with the vertex after DFS performed,
+         * MAX_VALUE until DFS performed
+         */
+        public int getDfsNum() { return dfsNum; }
+
+        /** Sets DFS num (for use during DFS search) */
+        public void setDfsNum(int dfsNum) { this.dfsNum = dfsNum; }
+
+        /** returns the low value calculated when finding connectors, MAX_VALUE by default */
+        public int getLow() { return low; }
+
+        /** Sets low value, for use when finding connectors */
+        public void setLow(int low) { this.low = low; }
+
         /** Stores the position of this vertex within the graph's vertex list */
         public void setPosition(Position<Vertex<V>> p) { pos = p; }
 
@@ -41,6 +58,7 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
 
         /** Returns reference to the underlying list of incoming edges */
         public ArrayList<Edge<E>> getIncoming() { return incoming; }
+
     }
 
     /** An edge between two vertices */
