@@ -218,4 +218,24 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
         InnerVertex<V> vertex = validate(v);
         return vertex.getOutgoing();
     }
+
+    public void setDFS(Vertex<V> v, int DFS) {
+        InnerVertex<V> inner = validate(v);
+        inner.setDfsNum(DFS);
+    }
+
+    public int getDFS(Vertex<V> v) {
+        InnerVertex<V> inner = validate(v);
+        return inner.getDfsNum();
+    }
+
+    public void setLow(Vertex<V> v, int low) {
+        InnerVertex<V> inner = validate(v);
+        inner.setDfsNum(low);
+    }
+
+    public int getLow(Vertex<V> v) {
+        InnerVertex<V> inner = validate(v);
+        return inner.getLow();
+    }
 }
