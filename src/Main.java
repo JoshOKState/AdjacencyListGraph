@@ -260,7 +260,7 @@ public class Main {
             fileFound = getDataFromFile(scnr.nextLine(), graph);
         }
         int selection = getUserSelection(scnr);
-        while(selection != 6) {     // Continue until user enter 6 to exit
+        while(selection != 6) {     // Continue until user enters 6 to exit
             Iterable<Vertex<Student>> vertices = graph.vertices();
             boolean found = false;
             switch (selection) {
