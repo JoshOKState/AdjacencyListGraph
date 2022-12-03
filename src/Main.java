@@ -103,7 +103,7 @@ public class Main {
             while(reader.ready()) {
                 String[] nextInput = reader.readLine().split("\t");
                 String id = nextInput[0], firstName = nextInput[1], lastName = nextInput[2],
-                        college = nextInput[3].replace("\"", ""), department = nextInput[4], email = nextInput[5];
+                        college = nextInput[3], department = nextInput[4], email = nextInput[5];
                 int friendCount = Integer.parseInt(nextInput[6]);
                 Student s = new Student(id, firstName, lastName, college, department, email, friendCount);
                 Iterable<Vertex<Student>> vertices = graph.vertices();
@@ -146,6 +146,7 @@ public class Main {
     public static <V,E> void collegeBFS(AdjacencyListGraph<Student,Friendship> g, Vertex<Student> s, Set<Vertex<Student>> known, Map<Vertex<Student>,
             Edge<Friendship>> forest, String collegeName) {
         PositionalList<Vertex<Student>> level = new LinkedPositionalList<>();
+        forest.put(s, null);
         known.add(s);
         level.addLast(s);
         while(!level.isEmpty()) {
@@ -345,9 +346,8 @@ public class Main {
                     for (Vertex v : vertices) {
                         Map forest = new ProbeHashMap();
                         Student current = (Student) v.getElement();
-                        if(current.getCollege().equals(collegeName) && !(known.contains(v))) {
+                        if(current.getCollege().equals(collegeName) && !(known.contains(v)))
                             collegeBFS(graph, v, known, forest, collegeName);
-                        }
                     }
                 }
                 case 5 -> {
