@@ -92,7 +92,7 @@ public class Main {
             while(reader.ready()) {
                 String[] nextInput = reader.readLine().split("\t");
                 String id = nextInput[0], firstName = nextInput[1], lastName = nextInput[2],
-                        college = nextInput[3], department = nextInput[4], email = nextInput[5];
+                        college = nextInput[3].replaceAll("\"", ""), department = nextInput[4], email = nextInput[5];
                 int friendCount = Integer.parseInt(nextInput[6]);
                 Student s = new Student(id, firstName, lastName, college, department, email, friendCount);
                 graph.insertVertex(s);
@@ -341,7 +341,7 @@ public class Main {
                 case 4 -> {
                     // Friend circle via BFS
                     System.out.print("Which college would you like to search? ");
-                    String collegeName = scnr.nextLine();
+                    String collegeName = scnr.nextLine().replaceAll("\"", "");
                     Set known = new HashSet();
                     System.out.println("Following are the friend circles in " + collegeName);
                     for (Vertex v : vertices) {
@@ -377,8 +377,11 @@ public class Main {
                     Map<Vertex<Student>, Edge<Friendship>> spanningForest = DFSComplete(graph);
                     if(spanningForest.size() == 0)
                         System.out.println("There are no connectors in the graph.");
-                    for(Entry<Vertex<Student>, Edge<Friendship>> kv : spanningForest.entrySet())
-                        System.out.println(kv.getKey().getElement().getStudentsFirstName() + " " + kv.getValue().getElement().toString());
+                    else {
+                        System.out.println("The connectors in the graph are as follows:");
+                        for (Entry<Vertex<Student>, Edge<Friendship>> kv : spanningForest.entrySet())
+                            System.out.println(kv.getKey().getElement().getStudentsFirstName() + " from " + kv.getKey().getElement().getCollege());
+                    }
                 }
                 default ->
                     // Selection was outside proper range
