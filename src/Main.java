@@ -377,7 +377,6 @@ public class Main {
                     Map<Vertex<Student>, Edge<Friendship>> spanningForest = DFSComplete(graph);
                     if(spanningForest.size() == 0)
                         System.out.println("There are no connectors in the graph.");
-                    System.out.println(spanningForest.size());
                     for(Entry<Vertex<Student>, Edge<Friendship>> kv : spanningForest.entrySet())
                         System.out.println(kv.getKey().getElement().getStudentsFirstName() + " " + kv.getValue().getElement().toString());
                 }
