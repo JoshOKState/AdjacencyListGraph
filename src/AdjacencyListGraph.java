@@ -153,11 +153,17 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
         // remove all incident edges from the graph
         for(Edge<E> edge : vert.getOutgoing()) {
             InnerEdge<E> e = validate(edge);
+            Vertex<V> opp = opposite(v, edge);
+            InnerVertex<V> opposing = (InnerVertex<V>)opp;
+            opposing.getIncoming().remove(e);
             edges.remove(e.getPosition());
         }
         vert.getOutgoing().clear();
         for(Edge<E> edge : vert.getIncoming()) {
             InnerEdge<E> e = validate(edge);
+            Vertex<V> opp = opposite(v, edge);
+            InnerVertex<V> opposing = (InnerVertex<V>)opp;
+            opposing.getIncoming().remove(e);
             edges.remove(e.getPosition());
         }
         vert.getIncoming().clear();
