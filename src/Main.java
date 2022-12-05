@@ -55,17 +55,7 @@ public class Main {
 
     /** Prints menu of available options for user */
     public static void printMenu() {
-        System.out.print("""
-
-                1. Remove friendship
-                2. Delete Account
-                3. Count friends
-                4. Friends Circle
-                5. Closeness centrality
-                6. Find Connectors
-                7. Exit
-                
-                Please make a selection (enter 1-7):\040""");
+        System.out.print("\n1. Remove friendship\n2. Delete Account\n3. Count friends\n4. Friends Circle\n5. Closeness centrality\n6. Find Connectors\n7. Exit\n\nPlease make a selection (enter 1-7): ");
     }
 
     /** Gets user input and returns as int if possible (-1 otherwise) */
@@ -308,7 +298,7 @@ public class Main {
             Iterable<Vertex<Student>> vertices = graph.vertices();
             boolean found = false;
             switch (selection) {
-                case 1 -> {
+                case 1:
                     // Remove friendship
                     System.out.print("Please enter the first name of the first student: ");
                     Student s1 = new Student(null, scnr.nextLine());
@@ -338,8 +328,8 @@ public class Main {
                         }
                         //graph.nullifyEdge(toRemove);
                     }
-                }
-                case 2 -> {
+                    break;
+                case 2:
                     // Delete Account
                     System.out.print("Please enter the first name of the student to remove: ");
                     Student s = new Student(null, scnr.nextLine());
@@ -354,8 +344,8 @@ public class Main {
                         }
                     }
                     if (!found) System.out.println("Sorry..\n" + s.getStudentsFirstName() + " not found!");
-                }
-                case 3 -> {
+                    break;
+                case 3:
                     // Count friends
                     System.out.print("Please enter the name of the student: ");
                     Student lonely = new Student(null, scnr.nextLine());
@@ -380,8 +370,8 @@ public class Main {
                         }
                     }
                     if (!found) System.out.println("Sorry..\n" + lonely.getStudentsFirstName() + " not found!");
-                }
-                case 4 -> {
+                    break;
+                case 4:
                     // Friend circle via BFS
                     System.out.print("Which college would you like to search? ");
                     String collegeName = scnr.nextLine().replaceAll("\"", "");
@@ -393,8 +383,8 @@ public class Main {
                         if(current.getCollege().equals(collegeName) && !(known.contains(v)))
                             collegeBFS(graph, v, known, forest, collegeName);
                     }
-                }
-                case 5 -> {
+                    break;
+                case 5:
                     // Closeness centrality à la Dijkstra's Algorithm
                     System.out.print("Please enter the student's name: ");
                     Student howClose = new Student(null, scnr.nextLine());
@@ -415,8 +405,8 @@ public class Main {
                         }
                     }
                     if (!found) System.out.println("Sorry..\n" + howClose.getStudentsFirstName() + " not found!");
-                }
-                case 6 -> {
+                    break;
+                case 6:
                     // Display connectors in graph
                     Map<Vertex<Student>, Edge<Friendship>> spanningForest = DFSComplete(graph);
                     if(spanningForest.size() == 0)
@@ -426,10 +416,11 @@ public class Main {
                         for (Entry<Vertex<Student>, Edge<Friendship>> kv : spanningForest.entrySet())
                             System.out.println(kv.getKey().getElement().getStudentsFirstName() + " from " + kv.getKey().getElement().getCollege());
                     }
-                }
-                default ->
+                    break;
+                default:
                     // Selection was outside proper range
                         System.out.println("\nYou didn't have a valid input. Please enter 1-6.\n");
+                        break;
             }
             // Get another selection from user
             selection = getUserSelection(scnr);
