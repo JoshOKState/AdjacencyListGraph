@@ -289,7 +289,7 @@ public class Main {
         return forest;
     }
 
-    /** prints the nubmer of vertices and edges in the graph to the console */
+    /** prints the number of vertices and edges in the graph to the console */
     public static void printInfo(AdjacencyListGraph<Student,Friendship> graph) {
         System.out.println("Total number of vertices in the graph: " + graph.numVertices());
         System.out.println("Total number of edges in the graph: " + graph.numEdges());
@@ -417,6 +417,7 @@ public class Main {
                     if (!found) System.out.println("Sorry..\n" + howClose.getStudentsFirstName() + " not found!");
                 }
                 case 6 -> {
+                    // Display connectors in graph
                     Map<Vertex<Student>, Edge<Friendship>> spanningForest = DFSComplete(graph);
                     if(spanningForest.size() == 0)
                         System.out.println("There are no connectors in the graph.");
