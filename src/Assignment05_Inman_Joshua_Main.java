@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {
+public class Assignment05_Inman_Joshua_Main {
     private static class Student {
         final String id, studentsFirstName, studentsLastName, college, department, email;
         int friendCount;
