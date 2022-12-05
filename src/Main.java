@@ -81,6 +81,12 @@ public class Main {
         }
     }
 
+    /**
+     * Parses file with given name and adds entries to the Graph
+     * @param filename the name of the file to read
+     * @param graph a graph to which vertices and edges may be added
+     * @return true if file read correctly, false if exception occurs
+     */
     static boolean getDataFromFile(String filename, AdjacencyListGraph<Student, Friendship> graph) {
         String filepath = "./" + filename;
         File file = new File(filepath);
@@ -143,8 +149,17 @@ public class Main {
         }
     }
 
+    /**
+     * Performs a breadth-first search of a given Graph and returns a Forest of vertices reached during search that match given college name
+     * Used to generate friend circles in a given college
+     * @param g the graph to search
+     * @param s the Vertex at which to begin the search
+     * @param known a set of Vertices which have already been traversed during search
+     * @param forest a forest to update with matching Vertices
+     * @param collegeName the name of the college matching Vertices belong to
+     */
     // Breadth-first search of graph
-    public static <V,E> void collegeBFS(AdjacencyListGraph<Student,Friendship> g, Vertex<Student> s, Set<Vertex<Student>> known, Map<Vertex<Student>,
+    public static void collegeBFS(AdjacencyListGraph<Student,Friendship> g, Vertex<Student> s, Set<Vertex<Student>> known, Map<Vertex<Student>,
             Edge<Friendship>> forest, String collegeName) {
         PositionalList<Vertex<Student>> level = new LinkedPositionalList<>();
         forest.put(s, null);
@@ -174,6 +189,13 @@ public class Main {
         }
     }
 
+    /**
+     * Finds the shortest path lengths between starting Vertex and other vertices in graph
+     * Dijkstra's Algorithm
+     * @param g the graph to be searched
+     * @param src  the root of the search
+     * @return a Map of shortest lengths from src to all other reachable Vertices
+     */
     // Dijkstra's algorithm
     public static <Student> Map<Vertex<Student>, Integer> shortestPathLengths(AdjacencyListGraph<Student, Friendship> g, Vertex<Student> src) {
         // d.get(v) is upper bound on distance from src to v
@@ -213,6 +235,13 @@ public class Main {
         return cloud;
     }
 
+    /**
+     * Performs a depth-first search on a given graph
+     * @param g the graph to be searched
+     * @param u the Vertex at which to begin the search
+     * @param known a map of previously visited vertices
+     * @param forest a map to update with vertices in the order they are traversed
+     */
     public static <Student, Friendship> void DFS(AdjacencyListGraph<Student,Friendship> g, Vertex<Student> u,
                                                  Set<Vertex<Student>> known, Map<Vertex<Student>, Edge<Friendship>> forest) {
         known.add(u);
@@ -225,6 +254,14 @@ public class Main {
         }
     }
 
+    /**
+     * Constructs a path from given vertex u to given vertex v
+     * @param g the graph to be searched
+     * @param u the starting vertex
+     * @param v the vertex to be reached
+     * @param forest A map of vertices reached and edges travelled
+     * @return a list of edges travelled
+     */
     public static <Student,Friendship> PositionalList<Edge<Friendship>> constructPath(Graph<Student,Friendship> g, Vertex<Student> u,
                                                                                       Vertex<Student> v, Map<Vertex<Student>, Edge<Friendship>> forest) {
         PositionalList<Edge<Friendship>> path = new LinkedPositionalList<>();
@@ -239,6 +276,11 @@ public class Main {
         return path;
     }
 
+    /**
+     * Performs depth-first search on unconnected graph
+     * @param g the graph to be searched
+     * @return a Map representing a forest of Vertices and Edges traversed
+     */
     public static <Student,Friendship> Map<Vertex<Student>, Edge<Friendship>> DFSComplete(AdjacencyListGraph<Student,Friendship> g) {
         Set<Vertex<Student>> known = new HashSet<>();
         Map<Vertex<Student>, Edge<Friendship>> forest = new ProbeHashMap<>();
@@ -247,6 +289,7 @@ public class Main {
         return forest;
     }
 
+    /** prints the nubmer of vertices and edges in the graph to the console */
     public static void printInfo(AdjacencyListGraph<Student,Friendship> graph) {
         System.out.println("Total number of vertices in the graph: " + graph.numVertices());
         System.out.println("Total number of edges in the graph: " + graph.numEdges());

@@ -26,10 +26,17 @@ public class AdjacencyListGraph<V, E> implements Graph<V, E> {
             else incoming = outgoing;
         }
 
-        /** Validates that this vertex instance belongs to the given graph */
+        /**
+         * Validates that this vertex instance belongs to the given graph
+         * @param graph
+         * @return
+         */
         public boolean validate(Graph<V,E> graph) { return (AdjacencyListGraph.this == graph && pos != null); }
 
-        /** returns the element associated with the vertex */
+        /**
+         * returns the element associated with the vertex
+         * @return the element stored at the vertex
+         */
         public V getElement() { return element; }
 
         /**
